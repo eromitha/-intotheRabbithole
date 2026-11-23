@@ -10,7 +10,7 @@
 <style>
 /* VOICE: quiet studio interface after the LE:MA reference; the paintings are the only colour.
    IDEA: a stack of canvases you flip through, then a numbered index of cards, each opening a case.
-   PICTURE: a scroll-driven 3D stack of the ten paintings.
+   PICTURE: a scroll-driven 3D stack of the nine paintings.
    COLOUR and TYPE: cool paper grey, black ink, one signal red; Inter Tight with small mono tags.
    LAYOUT: intro grid, sticky stack, 4-column card index, process strip, about, contact. */
 :root{color-scheme:light dark;--bg:light-dark(#f0f2f4,#0f1012);--card:light-dark(#e3e6e9,#1b1c1f);--ink:light-dark(#0b0b0c,#eef0f2);--mute:light-dark(#5b5f66,#9ea3aa);--line:light-dark(#d2d6db,#2a2c30);--red:light-dark(#d01406,#ff4a3d);--tag:light-dark(#0b0b0c,#eef0f2);--tagink:light-dark(#f0f2f4,#0b0b0c)}
@@ -214,6 +214,10 @@ dialog.zoom .btn:hover{background:#eef0f2;color:#0b0b0c}
 html,body{cursor:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2228%22%20height%3D%2228%22%20viewBox%3D%220%200%2028%2028%22%3E%3Cg%20stroke-linecap%3D%22round%22%3E%3Cg%20stroke%3D%22%23fff%22%20stroke-width%3D%228%22%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%222.8%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%228.4%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%228.4%22/%3E%3C/g%3E%3Cg%20stroke%3D%22%23e00d00%22%20stroke-width%3D%225%22%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%222.8%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%228.4%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%228.4%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 14 14,auto}
 a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%2036%2036%22%3E%3Cg%20stroke-linecap%3D%22round%22%3E%3Cg%20stroke%3D%22%23fff%22%20stroke-width%3D%229.5%22%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%223.6%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2210.8%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%2232.4%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2210.8%22/%3E%3C/g%3E%3Cg%20stroke%3D%22%23e00d00%22%20stroke-width%3D%226.5%22%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%223.6%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2210.8%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%2232.4%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2210.8%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 18 18,pointer !important}
 @media (max-width:1440px){.stage .side{display:none}}
+#works .cell.lead{grid-column:span 3;min-height:0;display:flex;flex-direction:column;justify-content:space-between}
+#works .cell.lead p{font-size:clamp(30px,3.6vw,56px);line-height:1.04;letter-spacing:-.025em;color:var(--ink);max-width:18ch;margin:0}
+@media (max-width:1000px){#works .cell.lead{grid-column:span 1}}
+@media (max-width:600px){#works .cell.lead{grid-column:auto}}
 </style>
 </head>
 <body>
@@ -233,9 +237,9 @@ a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%
     <span class="tag">Paintings \ process</span>
     <h1>Into the<br>Rabbit Hole</h1>
   </div>
-  <p class="mono gap" style="margin:6px 0 0;color:var(--mute)">10 paintings \ acrylic on canvas</p>
+  <p class="mono gap" style="margin:6px 0 0;color:var(--mute)">9 paintings \ acrylic on canvas</p>
   <div>
-    <p class="stmt">Ten paintings that follow a grid as it shakes, strains and learns to become a curve.</p>
+    <p class="stmt">Nine paintings that follow a grid as it shakes, strains and learns to become a curve.</p>
     <p class="stmt" style="color:var(--mute)">A map of losing control, and finding a way to live with it.</p>
   </div>
 </section>
@@ -252,8 +256,8 @@ a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%
 
 <section class="wrap index" id="works" aria-label="All works">
   <div class="cell lead">
-    <div class="tagrow mono"><span>The series as a map</span><span>00</span></div>
-    <p>Each painting is one stage of the same journey. Select a work to open it with its notes, details and sketchbook pages.</p>
+    <div class="tagrow mono"><span>The series as a map</span><span>9 paintings</span></div>
+    <p>Nine paintings of one landscape.</p>
   </div>
 </section>
 
@@ -379,10 +383,7 @@ a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%
      line:'A pull toward something familiar, long untouched.',
      text:'Synthesizing the two distinct identities from “The Quantum of Thoughts” opened up a spectrum between them. It sparked an instinctive pull toward something deeply familiar yet long untouched—prompting me to explore how I interact with that nostalgia and navigate its shifting dynamics.',
      process:[P('img/grid-process-1.jpg',2400,802,'Ink studies of a grid gradually pulled into curves, numbered stages with notes'),P('img/grid-process-3.jpg',2400,1373,'Sketchbook pages in black ink and red crayon on how grid and curve interact'),P('img/grid-process-4.jpg',2000,821,'Four ink and magenta studies, one titled The grid that was afraid to meet the curve'),P('img/grid-process-5.jpg',2000,1501,'Green sketchbook spread of three-dimensional grids tangled with red curves'),P('img/grid-process-6.jpg',2000,1431,'Seven sketchbook pages on anchors, tension and the infinitely zoomable grid')]},
-    {n:'09', t:'Where I Feel Weight',
-     line:'Stretched thin across many planes at once.',
-     text:'Stretched thin across multiple spatial planes. In attempting to reconcile every perspective at once, the work is forced to constantly reevaluate its grounding anchors—navigating the weight of infinite views without ever settling.'},
-    {n:'10', size:'1500 × 1500 mm', med:'Acrylic on canvas', t:'Where do the Reins Lie', img:'img/reins.jpg', w:1600, h:1591, alt:'Deep blue painting of pale vertebral columns ending in pink high heels, strung from a white web of anchor points',
+    {n:'09', size:'1500 × 1500 mm', med:'Acrylic on canvas', t:'Where do the Reins Lie', img:'img/reins.jpg', w:1600, h:1591, alt:'Deep blue painting of pale vertebral columns ending in pink high heels, strung from a white web of anchor points',
      line:'A faux puppet within its own framework.',
      text:'A loss of power that leads to a loss of control, forcing the character to operate as a faux puppet within its own framework.',
      process:[P('img/reins-process-1.jpg',2400,1115,'Ink sketches of spines, shedding pieces and strings pulled from anchor points')]}
@@ -432,7 +433,7 @@ a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%
       <p class="mono" style="color:var(--ink)">${w.size ? esc(w.med) + ' \\ ' + esc(w.size) : 'Details to come'}</p>
     </button>`).join(''));
 
-  /* case overlay, routed on #rh-01 … #rh-10 */
+  /* case overlay, routed on #rh-01 … #rh-09 */
   const dlg = document.getElementById('case');
   let zList = [], zAt = 0;
   const H = () => innerWidth < 600 ? 150 : innerWidth < 1000 ? 210 : 270;
