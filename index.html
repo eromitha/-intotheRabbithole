@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Into the Rabbit Hole — Eromitha Ramesh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* VOICE: quiet studio interface after the LE:MA reference; the paintings are the only colour.
+   IDEA: a stack of canvases you flip through, then a numbered index of cards, each opening a case.
+   PICTURE: a scroll-driven 3D stack of the ten paintings.
+   COLOUR and TYPE: cool paper grey, black ink, one signal red; Inter Tight with small mono tags.
+   LAYOUT: intro grid, sticky stack, 4-column card index, process strip, about, contact. */
+:root{color-scheme:light dark;--bg:light-dark(#f0f2f4,#0f1012);--card:light-dark(#e3e6e9,#1b1c1f);--ink:light-dark(#0b0b0c,#eef0f2);--mute:light-dark(#5b5f66,#9ea3aa);--line:light-dark(#d2d6db,#2a2c30);--red:light-dark(#d01406,#ff4a3d);--tag:light-dark(#0b0b0c,#eef0f2);--tagink:light-dark(#f0f2f4,#0b0b0c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Inter Tight",system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}a:hover{color:var(--red)}
+img{display:block;max-width:100%;height:auto}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.02em;text-transform:uppercase}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--tag);color:var(--tagink);padding:3px 8px;font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase;text-decoration:none}
+.tag:hover{background:var(--red);color:#fff}
+.wrap{padding-inline:max(2.4vw,16px)}
+h1,h2,h3{font-weight:500;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.fill{border-bottom:1px dashed var(--mute);color:var(--mute)}
+
+/* header */
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px)}
+header .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;min-height:56px}
+.brand{font-weight:600;font-size:17px;text-decoration:none;letter-spacing:-.02em}
+nav.main{display:flex;gap:2px;flex-wrap:wrap;justify-content:center}
+nav.main a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;text-decoration:none;color:var(--mute)}
+nav.main a:hover{color:var(--ink)}
+header .cta{justify-self:end}
+
+/* intro */
+.intro{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding-block:28px clamp(48px,7vw,96px)}
+.intro h1{font-size:clamp(46px,6.2vw,92px);line-height:.98;margin-top:18px}
+.intro .stmt{font-size:clamp(20px,2vw,28px);line-height:1.28;margin:0;letter-spacing:-.01em}
+.intro .stmt+.stmt{margin-top:18px}
+
+/* stack */
+.stack{position:relative;height:520vh}
+.stage{position:sticky;top:56px;height:calc(100vh - 56px);overflow:hidden;perspective:1600px;perspective-origin:50% 0%}
+.deck{position:absolute;left:50%;top:58%;width:min(76vw,1180px,calc((100vh - 56px) * 1.1));aspect-ratio:16/10;transform:translate(-50%,-50%);transform-style:preserve-3d}
+.sheet{all:unset;box-sizing:border-box;cursor:pointer;position:absolute;inset:0;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;will-change:transform,opacity;transform-origin:50% 100%;box-shadow:0 -10px 40px rgba(0,0,0,.12)}
+.sheet .bar{display:flex;justify-content:space-between;gap:12px;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--line)}
+.sheet .pic{flex:1;overflow:hidden;background:#111}
+.sheet img{width:100%;height:100%;object-fit:cover}
+.sheet .empty{flex:1;display:grid;place-items:center;color:var(--mute)}
+.stage .side{position:absolute;top:50%;transform:translateY(-50%);font-size:15px}
+.stage .l{left:max(2.4vw,16px)}.stage .r{right:max(2.4vw,16px);text-align:right}
+.stage .now{position:absolute;left:max(2.4vw,16px);bottom:24px;display:grid;gap:4px}
+.stage .now b{font-weight:500;font-size:clamp(20px,2.4vw,32px);letter-spacing:-.02em}
+.stage .go{position:absolute;right:max(2.4vw,16px);bottom:28px}
+.prog{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);display:flex;gap:4px}
+.prog i{width:18px;height:3px;background:var(--line)}.prog i.on{background:var(--red)}
+
+.sheet .open{position:absolute;right:12px;bottom:12px;background:var(--red);color:#fff;padding:6px 10px;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;pointer-events:none}
+.sheet:hover .open,.sheet:focus-visible .open{opacity:1;transform:none}
+.sheet:hover .pic img{filter:brightness(1.05)}
+.sheet:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+/* index */
+.index{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding-block:clamp(56px,8vw,112px) 24px}
+.cell{background:var(--card);padding:14px;display:flex;flex-direction:column;gap:14px;min-height:430px}
+.cell.lead{background:transparent;padding:0}
+.cell .top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.cell h3{font-size:clamp(22px,1.9vw,28px);line-height:1.08}
+.card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:14px;min-height:430px;transition:background .3s}
+.card:hover{background:light-dark(#dadde1,#232428)}
+.card:hover .ct{color:var(--red)}
+.card .top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.card .ct{font-size:clamp(22px,1.9vw,28px);line-height:1.08;font-weight:500;letter-spacing:-.025em}
+.card:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.card .im{flex:1;display:grid;place-items:center;padding:8% 10%;min-height:200px}
+.card .im img{max-height:240px;width:auto;object-fit:contain;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .5s}
+.card:hover .im img{transform:scale(1.04)}
+.card .im .ph{width:70%;aspect-ratio:1;border:1px dashed var(--mute);display:grid;place-items:center;color:var(--mute);text-align:center;padding:8px}
+.card p{margin:0;color:var(--mute);font-size:13px;line-height:1.45}
+.lead p{font-size:15px;color:var(--mute);max-width:34ch;margin:18px 0 0}
+.lead .tagrow{display:flex;justify-content:space-between;background:var(--card);padding:4px 8px}
+
+/* process band */
+.band{padding-block:clamp(56px,8vw,112px)}
+.band .head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-bottom:24px}
+.band h2{font-size:clamp(36px,4.4vw,64px);line-height:1}
+.band .scroll{overflow-x:auto;background:#fff;border:1px solid var(--line)}
+.band .scroll img{height:clamp(260px,38vw,520px);width:auto;max-width:none}
+
+/* work in progress */
+.wip{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:12px;align-items:start}
+.vcell{margin:0;background:var(--card);padding:12px;display:grid;gap:10px}
+.vcell video{width:100%;height:auto;display:block;background:#fff}
+.vcell figcaption{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--mute)}
+.vt{min-height:44px;padding:0 14px;border:1px solid var(--ink);background:transparent;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase}
+.vt:hover{background:var(--ink);color:var(--bg)}
+.reader{background:var(--card);padding:12px;display:grid;gap:12px}
+.desk{display:grid;place-items:center;padding:clamp(20px,4vw,56px) clamp(8px,2vw,24px);background:radial-gradient(circle,rgba(0,0,0,.09) 1px,transparent 1.4px) 0 0/9px 9px,light-dark(#d7dade,#141518);overflow:hidden}
+.book{position:relative;width:min(100%,1040px,calc(min(70vh,700px)*1.23));aspect-ratio:1.23;perspective:2600px;transition:transform .7s cubic-bezier(.3,.7,.2,1);cursor:pointer}
+.book{}
+.book.closed{transform:translateX(-25%)}
+.book:focus-visible{outline:2px solid var(--red);outline-offset:6px}
+.pg,.face{position:absolute;top:0;width:50%;height:100%;background-color:#f3efe6;background-repeat:no-repeat}
+.pg.left{left:0;box-shadow:-8px 12px 28px rgba(0,0,0,.28)}
+.pg.right{left:50%;box-shadow:8px 12px 28px rgba(0,0,0,.28)}
+.pg.empty{background:none;box-shadow:none}
+.pg.left::after,.face.back::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 78%,rgba(0,0,0,.22));pointer-events:none}
+.pg.right::after,.face.front::after{content:"";position:absolute;inset:0;background:linear-gradient(270deg,transparent 80%,rgba(0,0,0,.2));pointer-events:none}
+.pg.empty::after{display:none}
+.cover::before{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),inset 6px 0 0 rgba(0,0,0,.35)}
+.endpaper{background-color:#1a1a1a !important;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 2px,transparent 2px 10px)!important;color:#eef0f2;display:flex;flex-direction:column;justify-content:flex-end;padding:8%;font-family:"JetBrains Mono",monospace;font-size:clamp(9px,1vw,12px);text-transform:uppercase;line-height:1.6}
+.endpaper b{font-family:"Inter Tight",sans-serif;font-size:clamp(22px,3.4vw,44px);font-weight:600;text-transform:none;letter-spacing:-.02em;margin-bottom:10px;line-height:1}
+.leaf{position:absolute;top:0;left:50%;width:50%;height:100%;transform-style:preserve-3d;transform-origin:0 50%;z-index:5}
+.leaf.fromleft{left:0;transform-origin:100% 50%}
+.face{left:0;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face.back{transform:rotateY(180deg)}
+.rbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.rthumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.rthumbs button{all:unset;cursor:pointer;flex:none;border:2px solid transparent}
+.rthumbs button[aria-current=true]{border-color:var(--red)}
+.rthumbs button:focus-visible{outline:2px solid var(--red)}
+.rthumbs img{height:64px;width:auto;display:block}
+@media (max-width:700px){.wip{grid-template-columns:minmax(0,1fr)}}
+
+/* about + contact */
+.about{grid-template-columns:minmax(0,1fr) minmax(0,300px) minmax(0,2fr);gap:clamp(20px,3vw,48px);align-items:end;border-top:1px solid var(--line);padding-top:24px}
+.about .a-tag{align-self:start}
+.about .tagrow{display:flex;justify-content:space-between;background:var(--card);padding:4px 8px}
+.about .portrait{margin:0;display:grid;gap:8px}
+.about .portrait img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;filter:grayscale(.15) contrast(1.03)}
+.about .portrait figcaption{display:flex;justify-content:space-between;color:var(--mute);border-top:1px solid var(--ink);padding-top:6px}
+.about .who{display:grid;gap:18px;padding-bottom:30px}
+.about .who h2{font-size:clamp(56px,7vw,112px);line-height:.92;letter-spacing:-.04em}
+.about .facts{margin:6px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;border-top:1px solid var(--ink);padding-top:12px;max-width:720px}
+.about .facts dt{color:var(--mute);margin-bottom:4px}
+.about .facts dd{margin:0;font-size:15px;line-height:1.35}
+
+.about{display:grid;padding-bottom:clamp(56px,8vw,112px)}
+.about .cell{min-height:0}
+.about .big{grid-column:span 2}
+.about .big p{font-size:clamp(20px,1.9vw,26px);line-height:1.3;margin:0}
+.about ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px}
+footer{background:#0b0b0c;color:#eef0f2}
+footer .wrap{padding-block:clamp(48px,7vw,96px) 24px;display:grid;gap:56px}
+footer h2{font-size:clamp(48px,8vw,132px);line-height:.95}
+.contacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;font-size:14px}
+.contacts a{color:#eef0f2;text-decoration:none;border-bottom:1px solid #4a4c50;padding-bottom:2px;text-transform:none}
+.contacts a:hover{color:#ff4a3d;border-color:#ff4a3d}
+.contacts span{display:block;color:#9ea3aa;margin-bottom:6px}
+.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid #2a2c30;padding-top:14px;color:#9ea3aa}
+
+/* case overlay */
+dialog.case{scrollbar-gutter:stable;overflow-y:auto;border:0;padding:0;margin:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;background:var(--bg);color:var(--ink)}
+dialog.case::backdrop{background:rgba(0,0,0,.6)}
+.case .cbar{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px max(2.4vw,16px);background:var(--bg);border-bottom:1px solid var(--line)}
+.case .cbar .btns{display:flex;gap:6px}
+.case .btn{min-height:44px;padding:0 14px;border:1px solid var(--ink);background:transparent;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase}
+.case .btn:hover{background:var(--ink);color:var(--bg)}
+.chead{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:28px max(2.4vw,16px) 24px}
+.chead h2:focus{outline:none}
+.chead h2{font-size:clamp(40px,5.4vw,84px);line-height:.98;grid-column:span 2}
+.chead .txt{white-space:pre-line;font-size:clamp(17px,1.4vw,20px);line-height:1.5;margin:0}
+.cmain{padding:0 max(2.4vw,16px)}
+.cmain .hero{background:var(--card);display:grid;place-items:center;padding:clamp(16px,4vw,56px)}
+.cmain .hero img{max-height:82vh;width:auto}
+.cgal{padding:8px max(2.4vw,16px) 72px;display:grid;gap:10px}
+.cgal .ghead{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--ink);padding-top:10px;margin-top:40px}
+.cgal .ghead h3{font-size:clamp(22px,2vw,30px)}
+.jrow{display:flex;flex-wrap:wrap;gap:10px}
+.jrow figure{margin:0;position:relative;background:var(--card);overflow:hidden;flex:none;max-width:100%}
+.jrow figure button{all:unset;display:block;width:100%;height:100%;cursor:zoom-in}
+.jrow figure button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.jrow img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s,filter .3s}
+.jrow figure:hover img{transform:scale(1.025)}
+.jrow figure .n{position:absolute;left:8px;bottom:8px;background:var(--tag);color:var(--tagink);padding:2px 6px;font-family:"JetBrains Mono",monospace;font-size:11px;pointer-events:none}
+dialog.zoom{border:0;padding:0;background:transparent;max-width:96vw;max-height:96vh;overflow:visible}
+dialog.zoom::backdrop{background:rgba(8,8,9,.94)}
+dialog.zoom img{max-width:94vw;max-height:84vh;width:auto;height:auto;display:block;margin:0 auto}
+dialog.zoom .zbar{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#eef0f2;padding-top:12px}
+dialog.zoom .btn{color:#eef0f2;border-color:#eef0f2}
+dialog.zoom .btn:hover{background:#eef0f2;color:#0b0b0c}
+@media (prefers-reduced-motion:reduce){.jrow img{transition:none}}
+
+@media (max-width:1000px){
+  .index{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .intro,.band .head,.chead{grid-template-columns:minmax(0,1fr)}
+  .intro .gap,.band .head .gap{display:none}
+  .chead h2:focus{outline:none}
+.chead h2{grid-column:auto}
+  .contacts{grid-template-columns:minmax(0,1fr)}
+  .deck{width:84vw}
+  .stage .side{display:none}
+}
+@media (max-width:600px){
+  header .wrap{grid-template-columns:1fr auto}
+  nav.main{display:none}
+  .index{grid-template-columns:minmax(0,1fr)}
+  .about .big,.about .portrait{grid-column:auto}
+  .card,.cell{min-height:0}
+  .stack{height:420vh}
+  .deck{width:88vw;aspect-ratio:4/5}
+  .prog{display:none}
+}
+@media (prefers-reduced-motion:reduce){.card .im img,.card{transition:none}}
+@media (max-width:1000px){.about{grid-template-columns:minmax(0,260px) minmax(0,1fr)}.about .a-tag{grid-column:1/-1}}
+@media (max-width:600px){.about{grid-template-columns:minmax(0,1fr)}.about .portrait{max-width:280px}.about .facts{grid-template-columns:minmax(0,1fr)}.about .who{padding-bottom:0}}
+
+/* asterisk cursor */
+html,body{cursor:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2228%22%20height%3D%2228%22%20viewBox%3D%220%200%2028%2028%22%3E%3Cg%20stroke-linecap%3D%22round%22%3E%3Cg%20stroke%3D%22%23fff%22%20stroke-width%3D%228%22%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%222.8%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%228.4%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%228.4%22/%3E%3C/g%3E%3Cg%20stroke%3D%22%23e00d00%22%20stroke-width%3D%225%22%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%222.8%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%228.4%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2223.7%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%2214.0%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%2219.6%22/%3E%3Cline%20x1%3D%2214.0%22%20y1%3D%2214.0%22%20x2%3D%224.3%22%20y2%3D%228.4%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 14 14,auto}
+a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%2036%2036%22%3E%3Cg%20stroke-linecap%3D%22round%22%3E%3Cg%20stroke%3D%22%23fff%22%20stroke-width%3D%229.5%22%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%223.6%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2210.8%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%2232.4%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2210.8%22/%3E%3C/g%3E%3Cg%20stroke%3D%22%23e00d00%22%20stroke-width%3D%226.5%22%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%223.6%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2210.8%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2230.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%2218.0%22%20y2%3D%2232.4%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2225.2%22/%3E%3Cline%20x1%3D%2218.0%22%20y1%3D%2218.0%22%20x2%3D%225.5%22%20y2%3D%2210.8%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 18 18,pointer !important}
+@media (max-width:1440px){.stage .side{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top">Eromitha Ramesh</a>
+    <nav class="main mono" aria-label="Main">
+      <a href="#stack">Overview</a><a href="#works">Works</a><a href="sketchbook.html">Sketchbook</a><a href="#in-progress">In progress</a><a href="#about">About</a><a href="#contact">Contact</a>
+    </nav>
+    <a class="tag cta" href="#contact">↘ Get in touch</a>
+  </div>
+</header>
+
+<main>
+<section class="wrap intro" id="top" aria-label="Introduction">
+  <div>
+    <span class="tag">Paintings \ process</span>
+    <h1>Into the<br>Rabbit Hole</h1>
+  </div>
+  <p class="mono gap" style="margin:6px 0 0;color:var(--mute)">10 paintings \ acrylic on canvas</p>
+  <div>
+    <p class="stmt">Ten paintings that follow a grid as it shakes, strains and learns to become a curve.</p>
+    <p class="stmt" style="color:var(--mute)">A map of losing control, and finding a way to live with it.</p>
+  </div>
+</section>
+
+<section class="stack" id="stack" aria-label="The series as a stack of paintings">
+  <div class="stage">
+    <div class="side l">Into the Rabbit Hole</div>
+    <div class="deck" id="deck"></div>
+    <div class="now"><span class="mono" id="nowNum" style="color:var(--red)">//RH:01</span><b id="nowTitle">The Crack</b><span class="mono" style="color:var(--mute)">Click the painting to open it</span></div>
+    <div class="prog" id="prog" aria-hidden="true"></div>
+    <a class="tag go" href="#works">View all works ↓</a>
+  </div>
+</section>
+
+<section class="wrap index" id="works" aria-label="All works">
+  <div class="cell lead">
+    <div class="tagrow mono"><span>The series as a map</span><span>00</span></div>
+    <p>Each painting is one stage of the same journey. Select a work to open it with its notes, details and sketchbook pages.</p>
+  </div>
+</section>
+
+<section class="wrap band" id="in-progress" aria-label="Work in progress: In All the Bright Places">
+  <div class="head">
+    <div><span class="tag" style="background:var(--red);color:#fff">Work in progress</span><h2 style="margin-top:14px">In All the<br>Bright Places</h2></div>
+    <p class="mono gap" style="color:var(--mute);margin:6px 0 0">New series \ ink on paper \ in progress</p>
+    <p style="margin:0;font-size:clamp(18px,1.6vw,22px);line-height:1.35">A new series, still on the drawing table. Eyes open and close, lines loosen into threads, and the sketchbook fills page by page.</p>
+  </div>
+  <div class="wip">
+    <figure class="vcell">
+      <video src="vid/bright-1.mp4" poster="vid/bright-1.jpg" width="1024" height="720" muted loop playsinline preload="metadata" aria-label="Sketchbook spread for In All the Bright Places filling in, drawing by drawing"></video>
+      <figcaption class="mono"><span>Sketchbook \ building the spread</span><button class="vt" type="button" aria-label="Pause video">Pause</button></figcaption>
+    </figure>
+    <figure class="vcell">
+      <video src="vid/bright-2.mp4" poster="vid/bright-2.jpg" width="720" height="720" muted loop playsinline preload="metadata" aria-label="Sequence of black ink drawings: an eye, rows of eyes, closed eyes, then lines unravelling into a figure"></video>
+      <figcaption class="mono"><span>Studies \ eyes to threads</span><button class="vt" type="button" aria-label="Pause video">Pause</button></figcaption>
+    </figure>
+  </div>
+
+  <div class="head" id="colrath" style="margin-top:clamp(64px,9vw,128px)">
+    <div><span class="tag" style="background:var(--red);color:#fff">Work in progress</span><h2 style="margin-top:14px">Colrath</h2></div>
+    <p class="mono gap" style="color:var(--mute);margin:6px 0 0">A small comic \ ink in the sketchbook \ 13 pages</p>
+    <div>
+      <p style="margin:0;font-size:clamp(18px,1.6vw,22px);line-height:1.35">A small comic being worked out in the sketchbook: scenes, framing and perspective drawn page by page before the final panels.</p>
+      <p class="mono" style="margin:16px 0 0;color:var(--mute)">Written by Harish Ramesh \ illustrations by Eromitha Ramesh</p>
+    </div>
+  </div>
+  <div class="reader" id="reader">
+    <div class="desk">
+      <div class="book closed" id="book" tabindex="0" aria-roledescription="comic book" aria-label="Colrath. Use the arrow keys, the buttons, or click a page to turn it.">
+        <div class="pg left" id="bL"></div>
+        <div class="pg right" id="bR"></div>
+        <div class="leaf" id="leaf" hidden><div class="face front" id="lF"></div><div class="face back" id="lB"></div></div>
+      </div>
+    </div>
+    <div class="rbar">
+      <button class="vt" id="rPrev" type="button">← Prev</button>
+      <span class="mono" id="rCount" aria-live="polite">Cover</span>
+      <button class="vt" id="rNext" type="button">Open →</button>
+    </div>
+    <div class="rthumbs" id="rThumbs" aria-label="Jump to a spread"></div>
+  </div>
+</section>
+
+<section class="wrap about" id="about" aria-label="About">
+  <div class="a-tag"><div class="tagrow mono"><span>About</span></div></div>
+  <figure class="portrait">
+    <img src="img/portrait.jpg" width="1000" height="1331" loading="lazy" alt="Portrait of Eromitha Ramesh">
+    <figcaption class="mono"><span>Eromitha Ramesh</span><span>2026</span></figcaption>
+  </figure>
+  <div class="who">
+    <span class="mono" style="color:var(--red)">Architect \ artist</span>
+    <h2>Eromitha<br>Ramesh</h2>
+    <dl class="facts">
+      <div><dt class="mono">Practice</dt><dd>Architect / artist</dd></div>
+      <div><dt class="mono">Series</dt><dd>Into the Rabbit Hole</dd></div>
+      <div><dt class="mono">In progress</dt><dd>In All the Bright Places, Colrath</dd></div>
+    </dl>
+  </div>
+</section>
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <h2>Contact</h2>
+    <div class="contacts mono">
+      <div><span>Email</span><a href="mailto:3eromitha10@gmail.com">3eromitha10@gmail.com</a></div>
+      <div><span>Instagram</span><a href="https://www.instagram.com/clutttter/" target="_blank" rel="noopener">@clutttter</a></div>
+      <div><span>Based in</span>India / Netherlands</div>
+    </div>
+    <div class="foot mono"><span>© 2026 Eromitha Ramesh</span><span>Into the Rabbit Hole</span></div>
+  </div>
+</footer>
+
+<dialog class="case" id="case" aria-labelledby="cTitle">
+  <div class="cbar">
+    <span class="tag" id="cNum">//RH:01</span>
+    <div class="btns">
+      <button class="btn" id="cPrev" type="button">← Prev</button>
+      <button class="btn" id="cNext" type="button">Next →</button>
+      <button class="btn" id="cClose" type="button">Close ✕</button>
+    </div>
+  </div>
+  <div class="chead"><h2 id="cTitle" tabindex="-1" autofocus></h2><div><p class="txt" id="cText"></p><p class="mono" id="cMeta" style="margin:20px 0 0;color:var(--mute)"></p></div></div>
+  <div class="cmain"><div class="hero" id="cHero"></div></div>
+  <div class="cgal" id="cGal"></div>
+  <dialog class="zoom" id="zoom" aria-label="Enlarged image"><img id="zImg" alt=""><div class="zbar mono"><span id="zCap"></span><span style="display:flex;gap:6px"><button class="btn" id="zPrev" type="button">←</button><button class="btn" id="zNext" type="button">→</button><button class="btn" id="zClose" type="button">Close ✕</button></span></div></dialog>
+</dialog>
+
+<script>
+{
+  const P = (src,w,h,alt) => ({src,w,h,alt});
+  const works = [
+    {n:'01', size:'30 × 30 mm', med:'Acrylic on canvas', t:'The Crack', img:'img/crack.jpg', w:1600, h:1615, alt:'Black, grey and yellow painting of tangled organic forms, eyes and chequered planes, with a small figure on a tightrope',
+     line:'The first panic attack. The grid shakes.',
+     text:'The first panic attack. What had been calm and sorted suddenly wasn’t. The anxiety came without clear origin, leaving one question open: why is this happening? For the first time, the grid shook, control no longer certain. Why am I the puppet and the puppeteer?\n\nThe uncertainty led to new ways of coping, and to understanding it well enough to make peace with it.'},
+    {n:'02', size:'30 × 30 mm', med:'Acrylic on canvas', t:'Tensegrity of Thoughts', img:'img/tensegrity.jpg', w:1000, h:1000, alt:'Dark red, black and white painting of stretched white membranes across a grid, framed by a grey grid border',
+     line:'How mental frameworks flex, pull and bear weight.',
+     text:'Understanding the tensegrities of thought, and learning to tread accordingly: an exploration into how mental frameworks flex, pull, and bear their own internal weight.',
+     process:[P('img/tensegrity-process-1.jpg',2252,679,'Sketchbook pages titled Rabbit Hole: caves, nets and vaults in ink with red grid studies'),P('img/tensegrity-process-2.jpg',2400,474,'Long wall of pencil grid drawings with pink sticky notes')]},
+    {n:'03', size:'60 × 60 mm', med:'Acrylic on canvas', t:'Quantum of Thoughts', img:'img/quantum.jpg', w:1267, h:1280, alt:'Painting of a deep blue central form between rust-red and pale blue shapes over dark green blots and pencil drawing',
+     line:'Two inner voices, two realities at once.',
+     text:'A simultaneous reasoning of dual realities, emerging from the friction between two distinct inner voices shaped by the process.'},
+    {n:'04', size:'70 × 70 mm', med:'Acrylic on canvas', t:'The “Spin”', img:'img/spin.jpg', w:1500, h:1503, alt:'Painting of red tensile canopies, chequered planes and hanging spinning tops over a dark green grid',
+     line:'The grid was a curve all along.',
+     text:'The sheer joy of discovering control within the grid—only to realize it was never rigid, but a curve all along, and finding total freedom in that realization.',
+     process:[P('img/spin-process.jpg',1280,970,'Kochi 2026 sketchbook spread in black ink: a flexible grid of screws and curves, with a red wooden spinning top on the page')]},
+    {n:'05', size:'2400 × 80 mm', med:'Acrylic on canvas', t:'Purge', img:'img/purge.jpg', w:2400, h:626, alt:'Long horizontal painting on a yellow ground: violet bodies, blue nerve-like forms and dark red diamonds tangled with red lines',
+     line:'The collapse, and the forces that restored order.',
+     text:'Navigating the total collapse that occurred while bridging internal contradictions and forcing the grid to yield—mapping the forces that escalated the friction versus those that restored order.',
+     details:[P('img/purge-panel.jpg',1280,725,'Left section of Purge'),P('img/purge-detail-1.jpg',1400,1400,'Detail of blue nerve-like forms and a violet body'),P('img/purge-detail-2.jpg',1400,1400,'Detail of red and blue tangled tubes beside a violet diamond figure')],
+     process:[P('img/purge-process-floor.jpg',620,1400,'Black and white photo from above of the long canvas on the floor, being painted'),P('img/purge-process-1.jpg',692,960,'Ink sketch in red, blue and black: a cluttered grid and pixelated squares'),P('img/purge-process-2.jpg',704,486,'Ink sketch about escapism, dated in the margin'),P('img/purge-process-3.jpg',230,959,'Tall coloured study of figures twisting through a diamond lattice')]},
+    {n:'06', size:'1500 × 60 mm', med:'Acrylic on canvas', t:'Neither Here, Nor There', img:'img/neither.jpg', w:1593, h:590, alt:'Long lilac painting of flowing forms, a chequered rope and small figures drifting between them',
+     line:'Between original roots and placelessness.',
+     text:'A character in constant flux—purged, unanchored, and caught in the pull between original roots and total placelessness.',
+     process:[P('img/neither-process.jpg',2400,1250,'Handwritten notes titled In search of home beside ink sketches of rain trails and a street lamp')]},
+    {n:'07', size:'1200 × 450 mm', med:'Acrylic on canvas', t:'Liminal Existence', img:'img/liminal.jpg', w:2400, h:997, alt:'Painting of crowded violet figures pressed inside a dark red frame, reaching out over a pale yellow ground with red bars',
+     line:'Identity contracts under the weight of context.',
+     text:'Existing in a liminal space where identity contracts under the weight of context. Stripped of a clear anchor, it is precisely this displacement that forces the character to shrink inward.',
+     process:[P('img/liminal-process.jpg',1200,1745,'Ink sketch titled Liminal existence: figures shrinking to get out of a frame')]},
+    {n:'08', size:'1800 × 900 mm', med:'Acrylic on canvas', t:'The Grid that was Afraid to Meet the Curve', img:'img/grid.jpg', w:2000, h:1472, alt:'Two-panel red and black painting where white grids melt into curving webs and chequered patterns',
+     line:'A pull toward something familiar, long untouched.',
+     text:'Synthesizing the two distinct identities from “The Quantum of Thoughts” opened up a spectrum between them. It sparked an instinctive pull toward something deeply familiar yet long untouched—prompting me to explore how I interact with that nostalgia and navigate its shifting dynamics.',
+     process:[P('img/grid-process-1.jpg',2400,802,'Ink studies of a grid gradually pulled into curves, numbered stages with notes'),P('img/grid-process-3.jpg',2400,1373,'Sketchbook pages in black ink and red crayon on how grid and curve interact'),P('img/grid-process-4.jpg',2000,821,'Four ink and magenta studies, one titled The grid that was afraid to meet the curve'),P('img/grid-process-5.jpg',2000,1501,'Green sketchbook spread of three-dimensional grids tangled with red curves'),P('img/grid-process-6.jpg',2000,1431,'Seven sketchbook pages on anchors, tension and the infinitely zoomable grid')]},
+    {n:'09', t:'Where I Feel Weight',
+     line:'Stretched thin across many planes at once.',
+     text:'Stretched thin across multiple spatial planes. In attempting to reconcile every perspective at once, the work is forced to constantly reevaluate its grounding anchors—navigating the weight of infinite views without ever settling.'},
+    {n:'10', size:'1500 × 1500 mm', med:'Acrylic on canvas', t:'Where do the Reins Lie', img:'img/reins.jpg', w:1600, h:1591, alt:'Deep blue painting of pale vertebral columns ending in pink high heels, strung from a white web of anchor points',
+     line:'A faux puppet within its own framework.',
+     text:'A loss of power that leads to a loss of control, forcing the character to operate as a faux puppet within its own framework.',
+     process:[P('img/reins-process-1.jpg',2400,1115,'Ink sketches of spines, shedding pieces and strings pulled from anchor points')]}
+  ];
+  const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  /* stack */
+  const deck = document.getElementById('deck');
+  deck.innerHTML = works.map((w, i) => `<button type="button" class="sheet" data-open="${i}" aria-label="Open ${esc(w.t)}" tabindex="-1"><div class="bar mono"><span>//RH:${w.n}</span><span>${esc(w.t)}</span></div>${w.img ? `<div class="pic"><img src="${w.img}" alt="" loading="eager"></div>` : `<div class="empty mono">Image to come</div>`}<span class="open mono">Open ↗</span></button>`).join('');
+  document.getElementById('prog').innerHTML = works.map(() => '<i></i>').join('');
+  const sheets = [...deck.children], ticks = [...document.getElementById('prog').children];
+  const stackEl = document.getElementById('stack'), nowNum = document.getElementById('nowNum'), nowTitle = document.getElementById('nowTitle');
+  const N = works.length;
+  let cur = -1;
+  const layout = () => {
+    const r = stackEl.getBoundingClientRect(), span = stackEl.offsetHeight - innerHeight;
+    const t = Math.min(1, Math.max(0, -r.top / Math.max(1, span)));
+    const p = t * (N - 1);
+    sheets.forEach((s, i) => {
+      const d = i - p;
+      let tf, op = 1;
+      if (d < 0) { // flipped past: falls toward the viewer and away
+        const k = Math.min(1, -d), e = k * k;
+        tf = `translate3d(0,${k * 60 + e * 80}%,${k * 80}px) rotateX(${-k * 18}deg)`;
+        op = Math.max(0, 1 - k * 3.2);
+      } else {
+        const dd = Math.min(d, 9);
+        tf = `translate3d(0,${-dd * 9}%,${-dd * 120}px) rotateX(${dd * 4}deg)`;
+        op = d > 9 ? 0 : 1;
+      }
+      s.style.transform = tf; s.style.opacity = op; s.style.zIndex = String(100 - i); s.style.pointerEvents = op < .15 ? 'none' : 'auto'; s.tabIndex = (i === Math.min(N - 1, Math.max(0, Math.ceil(p - 0.3)))) ? 0 : -1;
+    });
+    const c = Math.min(N - 1, Math.max(0, Math.ceil(p - 0.3)));
+    if (c !== cur) { cur = c; nowNum.textContent = '//RH:' + works[c].n; nowTitle.textContent = works[c].t; ticks.forEach((k, i) => k.classList.toggle('on', i <= c)); }
+  };
+  let raf = 0;
+  addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; layout(); }); }, {passive:true});
+  addEventListener('resize', layout);
+  layout();
+
+  /* index cards */
+  document.getElementById('works').insertAdjacentHTML('beforeend', works.map((w, i) => `
+    <button class="card" type="button" data-open="${i}" aria-label="Open ${esc(w.t)}">
+      <span class="top"><span class="ct">${esc(w.t)}</span><span class="mono">${w.n}</span></span>
+      <span class="im">${w.img ? `<img src="${w.img}" width="${w.w}" height="${w.h}" loading="lazy" alt="${esc(w.alt)}">` : `<span class="ph mono">Image to come</span>`}</span>
+      <p class="mono">${esc(w.line)}</p>
+      <p class="mono" style="color:var(--ink)">${w.size ? esc(w.med) + ' \\ ' + esc(w.size) : 'Details to come'}</p>
+    </button>`).join(''));
+
+  /* case overlay, routed on #rh-01 … #rh-10 */
+  const dlg = document.getElementById('case');
+  let zList = [], zAt = 0;
+  const H = () => innerWidth < 600 ? 150 : innerWidth < 1000 ? 210 : 270;
+  const jrow = (list, tag, t) => `<div class="jrow">${list.map((p, k) => `<figure data-ar="${(p.w / p.h).toFixed(4)}"><button type="button" data-z="${zList.push({src:p.src, alt:p.alt, cap:tag + ' ' + String(k + 1).padStart(2, '0') + ' \\ ' + t}) - 1}" aria-label="Enlarge: ${esc(p.alt)}"><img src="${p.src}" width="${p.w}" height="${p.h}" loading="lazy" alt="${esc(p.alt)}"></button><span class="n">${tag} ${String(k + 1).padStart(2, '0')}</span></figure>`).join('')}</div>`;
+  /* justified rows: every row fills the width exactly at a shared height */
+  const justify = () => {
+    document.querySelectorAll('#cGal .jrow').forEach(row => {
+      const W = Math.floor(row.getBoundingClientRect().width) - 1, gap = 10, target = innerWidth < 600 ? 170 : innerWidth < 1000 ? 240 : 300;
+      const figs = [...row.children]; let line = [], sum = 0;
+      const place = (items, h) => items.forEach(f => { f.style.width = Math.floor(f.dataset.ar * h) + 'px'; f.style.height = Math.floor(h) + 'px'; });
+      figs.forEach(f => {
+        line.push(f); sum += +f.dataset.ar;
+        const h = (W - gap * (line.length - 1)) / sum;
+        if (h <= target) { place(line, Math.min(h, target * 1.9)); line = []; sum = 0; }
+      });
+      if (line.length) { const h = (W - gap * (line.length - 1)) / sum; place(line, Math.min(h, target * 2.2)); }
+    });
+  };
+  addEventListener('resize', () => { if (document.getElementById('case').open) justify(); });
+  const render = i => {
+    const w = works[i];
+    document.getElementById('cNum').textContent = '//RH:' + w.n + ' \\ ' + String(i + 1).padStart(2, '0') + ' of ' + N;
+    document.getElementById('cTitle').textContent = w.t;
+    document.getElementById('cText').textContent = w.text;
+    document.getElementById('cMeta').innerHTML = w.size ? `${esc(w.med)} \\ ${esc(w.size)}` : `<span class="fill">Medium \\ size to come</span>`;
+    document.getElementById('cHero').innerHTML = w.img ? `<img src="${w.img}" width="${w.w}" height="${w.h}" alt="${esc(w.alt)}">` : `<p class="mono" style="color:var(--mute);padding:120px 0">Image to come</p>`;
+    let g = '';
+    zList = [];
+    if (w.details) g += `<div class="ghead"><h3>Details</h3><span class="mono" style="color:var(--mute)">${w.details.length} images</span></div>` + jrow(w.details, 'D', w.t);
+    if (w.process) g += `<div class="ghead"><h3>Process</h3><span class="mono" style="color:var(--mute)">${w.process.length} ${w.process.length > 1 ? 'pages' : 'page'}</span></div>` + jrow(w.process, 'P', w.t);
+    g += '';
+    document.getElementById('cGal').innerHTML = g;
+    requestAnimationFrame(justify);
+    dlg.scrollTop = 0;
+  };
+  const route = () => {
+    const m = location.hash.match(/^#rh-(\d\d)$/);
+    const i = m ? works.findIndex(w => w.n === m[1]) : -1;
+    if (i >= 0) { render(i); if (!dlg.open) { try { dlg.showModal(); } catch (_) { dlg.setAttribute('open', ''); } } }
+    else if (dlg.open) dlg.close();
+  };
+  const go = i => { location.hash = 'rh-' + works[(i + N) % N].n; };
+  const idx = () => works.findIndex(w => location.hash === '#rh-' + w.n);
+  document.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) go(+b.dataset.open); });
+  document.getElementById('cPrev').addEventListener('click', () => go(idx() - 1));
+  document.getElementById('cNext').addEventListener('click', () => go(idx() + 1));
+  document.getElementById('cClose').addEventListener('click', () => { location.hash = 'works'; });
+  dlg.addEventListener('cancel', e => { e.preventDefault(); location.hash = 'works'; });
+  addEventListener('hashchange', route);
+  route();
+
+  /* work-in-progress videos: play when visible, never under reduced motion */
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.vcell').forEach(f => {
+    const v = f.querySelector('video'), b = f.querySelector('.vt');
+    let user = still ? 'paused' : 'auto';
+    const sync = () => { b.textContent = v.paused ? 'Play' : 'Pause'; b.setAttribute('aria-label', (v.paused ? 'Play' : 'Pause') + ' video'); };
+    v.addEventListener('play', sync); v.addEventListener('pause', sync); sync();
+    b.addEventListener('click', () => { if (v.paused) { user = 'auto'; v.play().catch(() => {}); } else { user = 'paused'; v.pause(); } });
+    const io = new IntersectionObserver(es => es.forEach(e => { if (user !== 'auto') return; if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }), {threshold:.35});
+    io.observe(v);
+  });
+
+  /* Colrath comic book: spread 0 is the closed cover; each photo is one open spread */
+  const pad = n => String(n).padStart(2, '0');
+  const im = n => `url("comic/colrath-${pad(n)}.jpg")`;
+  const spreads = [{L:null, R:{full:1}}, {L:{end:true}, R:{full:2}}];
+  for (let n = 3; n <= 13; n++) spreads.push({L:{half:n, side:'left'}, R:{half:n, side:'right'}});
+  const S = spreads.length;
+  const book = document.getElementById('book'), bL = document.getElementById('bL'), bR = document.getElementById('bR');
+  const leaf = document.getElementById('leaf'), lF = document.getElementById('lF'), lB = document.getElementById('lB');
+  const rCount = document.getElementById('rCount'), rNext = document.getElementById('rNext'), rPrev = document.getElementById('rPrev'), rThumbs = document.getElementById('rThumbs');
+  const paint = (el, f, base) => {
+    el.className = base; el.innerHTML = ''; el.style.backgroundImage = ''; el.style.backgroundSize = ''; el.style.backgroundPosition = '';
+    if (!f) { el.classList.add('empty'); return; }
+    if (f.end) { el.classList.add('endpaper'); el.innerHTML = '<b>Colrath</b>A small comic<br>Written by Harish Ramesh<br>Illustrations by Eromitha Ramesh'; return; }
+    if (f.full) { el.style.backgroundImage = im(f.full); el.style.backgroundSize = '100% 100%'; if (f.full === 1) el.classList.add('cover'); return; }
+    el.style.backgroundImage = im(f.half); el.style.backgroundSize = '200% 100%'; el.style.backgroundPosition = f.side === 'left' ? '0 0' : '100% 0';
+  };
+  rThumbs.innerHTML = spreads.map((sp, i) => `<button type="button" data-sp="${i}" aria-label="${i === 0 ? 'Cover' : 'Spread ' + i}"><img src="comic/colrath-${pad(i === 0 ? 1 : i === 1 ? 2 : i + 1)}.jpg" alt="" loading="lazy"></button>`).join('');
+  let at = 0, busy = false;
+  const label = () => {
+    rCount.textContent = at === 0 ? 'Cover' : `Spread ${pad(at)} / ${pad(S - 1)}`;
+    rNext.textContent = at === 0 ? 'Open →' : 'Next →'; rNext.disabled = at === S - 1; rPrev.disabled = at === 0;
+    book.classList.toggle('closed', at === 0);
+    [...rThumbs.children].forEach((b, k) => b.setAttribute('aria-current', k === at ? 'true' : 'false'));
+    for (const k of [at + 1, at + 2]) if (spreads[k]) for (const f of [spreads[k].L, spreads[k].R]) if (f && (f.full || f.half)) { const p = new Image(); p.src = `comic/colrath-${pad(f.full || f.half)}.jpg`; }
+  };
+  const set = i => { at = i; paint(bL, spreads[i].L, 'pg left'); paint(bR, spreads[i].R, 'pg right'); label(); };
+  const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const turn = dir => {
+    const to = at + dir;
+    if (busy || to < 0 || to >= S) return;
+    if (calm()) { set(to); return; }
+    busy = true;
+    const from = spreads[at], next = spreads[to];
+    leaf.hidden = false;
+    if (dir > 0) {
+      leaf.className = 'leaf'; paint(lF, from.R, 'face front'); paint(lB, next.L, 'face back'); paint(bR, next.R, 'pg right');
+    } else {
+      leaf.className = 'leaf fromleft'; paint(lF, from.L, 'face front'); paint(lB, next.R, 'face back'); paint(bL, next.L, 'pg left');
+    }
+    at = to; label();
+    const a = leaf.animate(dir > 0
+      ? [{transform:'rotateY(0deg)'}, {transform:'rotateY(-90deg) scaleY(1.02)', offset:.5}, {transform:'rotateY(-180deg)'}]
+      : [{transform:'rotateY(0deg)'}, {transform:'rotateY(90deg) scaleY(1.02)', offset:.5}, {transform:'rotateY(180deg)'}],
+      {duration:900, easing:'cubic-bezier(.45,.05,.3,1)'});
+    a.onfinish = () => { set(at); leaf.hidden = true; busy = false; };
+  };
+  rNext.addEventListener('click', () => turn(1));
+  rPrev.addEventListener('click', () => turn(-1));
+  book.addEventListener('click', e => { const r = book.getBoundingClientRect(); const right = at === 0 || e.clientX > r.left + r.width / 2; turn(right ? 1 : -1); });
+  book.addEventListener('keydown', e => { if (e.key === 'ArrowRight') { turn(1); e.preventDefault(); } if (e.key === 'ArrowLeft') { turn(-1); e.preventDefault(); } });
+  let sx = null;
+  book.addEventListener('pointerdown', e => { sx = e.clientX; });
+  book.addEventListener('pointerup', e => { if (sx !== null && Math.abs(e.clientX - sx) > 40) { turn(e.clientX < sx ? 1 : -1); sx = -1e9; } else sx = null; });
+  book.addEventListener('click', e => { if (sx === -1e9) { e.stopImmediatePropagation(); sx = null; } }, true);
+  rThumbs.addEventListener('click', e => { const b = e.target.closest('[data-sp]'); if (b && !busy) set(+b.dataset.sp); });
+  set(0);
+
+  /* enlarge images inside a painting page */
+  const zoom = document.getElementById('zoom'), zImg = document.getElementById('zImg'), zCap = document.getElementById('zCap');
+  const zShow = i => { zAt = (i + zList.length) % zList.length; const z = zList[zAt]; zImg.src = z.src; zImg.alt = z.alt; zCap.textContent = z.cap; };
+  document.getElementById('cGal').addEventListener('click', e => { const b = e.target.closest('[data-z]'); if (!b) return; zShow(+b.dataset.z); try { zoom.showModal(); } catch (_) {} });
+  document.getElementById('zPrev').addEventListener('click', () => zShow(zAt - 1));
+  document.getElementById('zNext').addEventListener('click', () => zShow(zAt + 1));
+  document.getElementById('zClose').addEventListener('click', () => zoom.close());
+  zoom.addEventListener('click', e => { if (e.target === zoom) zoom.close(); });
+  zoom.addEventListener('keydown', e => { if (e.key === 'ArrowRight') zShow(zAt + 1); if (e.key === 'ArrowLeft') zShow(zAt - 1); });
+  zoom.addEventListener('cancel', e => { e.stopPropagation(); });
+}
+</script>
+</body>
+</html>
