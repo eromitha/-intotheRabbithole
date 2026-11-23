@@ -198,7 +198,10 @@ dialog.zoom .btn:hover{background:#eef0f2;color:#0b0b0c}
 }
 @media (max-width:600px){
   header .wrap{grid-template-columns:1fr auto}
-  nav.main{display:none}
+  nav.main{grid-column:1/-1;grid-row:2;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 10px 4px;border-top:1px solid var(--line)}
+  nav.main::-webkit-scrollbar{display:none}
+  nav.main a{flex:none;min-height:40px}
+  header .wrap{row-gap:0}
   .index{grid-template-columns:minmax(0,1fr)}
   .about .big,.about .portrait{grid-column:auto}
   .card,.cell{min-height:0}
