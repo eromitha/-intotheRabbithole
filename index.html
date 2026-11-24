@@ -133,7 +133,7 @@ header .cta{justify-self:end}
 .about .tagrow{display:flex;justify-content:space-between;background:var(--card);padding:4px 8px}
 .about .portrait{margin:0;display:grid;gap:8px}
 .flip{position:relative;aspect-ratio:1/1;background:#e6e6e6;overflow:hidden;cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none}
-.flip img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.flip .sprite{position:absolute;inset:0;background:url("img/portrait-frames.jpg") 0 0/500% 300% no-repeat;pointer-events:none}
 .flip .fc,.flip .fh{position:absolute;padding:3px 7px;font-size:11px;pointer-events:none;transition:opacity .3s}
 .flip .fc{left:8px;top:8px;background:var(--tag);color:var(--tagink)}
 .flip .fh{right:8px;bottom:8px;background:var(--red);color:#fff;opacity:0}
@@ -312,7 +312,7 @@ a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%
   <div class="a-tag"><div class="tagrow mono"><span>About</span></div></div>
   <figure class="portrait">
     <div class="flip" id="flip" role="img" aria-label="Portrait of Eromitha Ramesh: a stop-motion collage moving from a black-and-white portrait to photos of her at her desk and painting, with a red scribble drawn around her">
-      <img src="img/me/01.jpg" width="900" height="900" alt="">
+      <span class="sprite" id="sprite"></span>
       <span class="fc mono" id="fc">01 / 15</span>
       <span class="fh mono" id="fh">Move across to flip</span>
     </div>
@@ -576,12 +576,12 @@ a,button,[data-open],.book,.vcell video,summary{cursor:url("data:image/svg+xml,%
 
   /* About portrait: a stop-motion flipbook you can scrub */
   {
-    const box = document.getElementById('flip'), img = box.querySelector('img'), fc = document.getElementById('fc');
-    const N = 15, src = i => `img/me/${String(i + 1).padStart(2, '0')}.jpg`;
+    const box = document.getElementById('flip'), sp = document.getElementById('sprite'), fc = document.getElementById('fc');
+    const N = 15;
     const tick = document.createElement('i'); tick.className = 'tick'; box.appendChild(tick);
-    let pre = false; const preload = () => { if (pre) return; pre = true; for (let i = 0; i < N; i++) { const p = new Image(); p.src = src(i); } };
+    const preload = () => {};
     let f = 0, timer = null, hold = false;
-    const show = i => { f = (i + N) % N; img.src = src(f); fc.textContent = String(f + 1).padStart(2, '0') + ' / ' + N; tick.style.width = ((f + 1) / N * 100) + '%'; };
+    const show = i => { f = (i + N) % N; sp.style.backgroundPosition = `${(f % 5) * 25}% ${Math.floor(f / 5) * 50}%`; fc.textContent = String(f + 1).padStart(2, '0') + ' / ' + N; tick.style.width = ((f + 1) / N * 100) + '%'; };
     const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const play = () => { if (calm || timer || hold) return; timer = setInterval(() => show(f + 1), 190); };
     const stop = () => { clearInterval(timer); timer = null; };
